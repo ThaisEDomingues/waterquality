@@ -1,0 +1,64 @@
+create database agua;
+use agua;
+rename table `copy of waterquality` to waterquality;
+select * from waterquality;
+
+
+select station_location,
+substring_index(station_location,',',1) as latitude,
+substring_index(station_location,',',-1) as longitude
+from waterquality;
+
+select date,
+year(date) as ano,
+month(date) as mês,
+day(date) as dia
+from waterquality;
+
+-- qunado temos uma data, nao precisamos usar o substring
+-- ex: 2025-01-02 ----> YYYY-MM-DD
+select Date,
+-- o sql sempre sabe quando é uma data se esta no formato de data
+year(Date) as Ano, 
+-- nao quero que seja 1, 2, 3, 4, 5... 12
+-- quero que fique jan, fev, mar, abril, maio... dez
+month(date) as "Mês (NUM)",
+-- Mês em txt
+-- para alterar a exibição eu uso o IF do sql
+-- o IF do sql é chamado de CASE
+-- INICIO
+CASE month(date)
+when 1 then 'jan'
+-- when -> "onde é" 
+-- condição
+-- then --> "vira"
+-- resposta
+when 2 then 'fev'
+when 3 then 'mar'
+when 4 then 'abr'
+when 5 then 'mai'
+when 6 then 'jun'
+when 7 then 'jul'
+when 8 then 'ago'
+when 9 then 'set'
+when 10 then 'oct'
+when 11 then 'nov'
+when 12 then 'dez'
+ 
+end as "Mês (txt)",
+-- FIM
+day(date) as Dia
+from waterquality;
+
+-- pensando que nao temos privilégio de criar uma view, vamos fazer apenas uma consulta waterquality-- e enviar a consulta para o pbi
+ -- PROBLEMA quando fazemos consulta personalizada, 
+-- devemos informar todos os campos necessarios
+select station_id as 'id da estação',
+substring_index(station_location,',',1) as latitude,
+substring_index(station_location,',',-1) as longitude,
+date, 
+elt(month(date), 'jan','fev','mar','abr','mai','jun',
+'jul','ago','set','out','nov','dez') as "mês",
+ph, Dissolved_Oxygen, turbidity, nitrogen, phosphorus,
+rainfall, land_use, pollution_event, fish_population
+from waterquality;
